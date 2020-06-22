@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+      "baseUrl": "./",
+      "outDir": "app",
+      "sourceMap": true,
+      "noImplicitAny": false,
+      "module": "ESNext",
+      "target": "es5",
+      "allowJs": true,
+      "lib": ["es6", "dom"],
+      "jsx": "react",
+      "experimentalDecorators": true,
+      "allowSyntheticDefaultImports": true,
+      "moduleResolution": "node",
+      "paths": {
+        "@/*": ["./src/*"]
+      },
+      "typeRoots": [
+        "./node_modules/@types",
+        "./src/types/",
+    ]
+  },
+  "include": [
+      "./src/**/*"
+  ]
+}

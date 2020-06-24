@@ -2,30 +2,35 @@
 
 const Koa = require("koa");
 const koaRouter = require("koa-router");
-const bodyParser = require("koa-body");
+const koaBody = require("koa-body");
 const koaConvert = require("koa-convert");
 const koaCors = require("koa2-cors");
 // const session = require('koa-session');
 const chalk = require('chalk');
 const koaStatic = require('koa-static2');
 const path = require('path');
-
-const { accessLogger, errLogger } = require("./logs/logger");
+// const { accessLogger, errLogger } = require("./logs/logger");
 const { getIPAdress, handleFail } = require('./utils');
 
 const CONSTS = require('./consts')
 
 const app = new Koa();
 
+app.use(koaBody({
+  multipart: true,
+  formidable: {
+    maxFileSize: 200 * 1024 * 1024    // 设置上传文件大小最大限制，默认2M
+  }
+}));
 
 // 全局错误捕获
-app.use(async (ctx, next)=>{
+app.use(async (ctx, next) => {
   try {
-      await next();
+    await next();
   } catch (error) {
-      // 响应
-      ctx.body = handleFail(error, '服务器异常', 500);
-      ctx.app.emit('error', error); // 触发应用层级错误事件
+    // 响应
+    ctx.body = handleFail(error, '服务器异常', 500);
+    ctx.app.emit('error', error); // 触发应用层级错误事件
   }
 });
 // 路由
@@ -43,8 +48,8 @@ const api = koaRouter()
 
 // 中间件
 app
-  .use(accessLogger())
-  .use(koaConvert(bodyParser()))
+  // .use(accessLogger())
+  // .use(koaConvert(koaBody()))
   .use(
     koaCors({
       origin: ctx => {

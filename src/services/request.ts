@@ -3,7 +3,7 @@ import { message } from 'antd'
 axios.defaults.withCredentials = true
 
 axios.interceptors.response.use(res => {
-  const { data = {success: false} } = res
+  const { data = { success: false } } = res
   const { success, code, message: msg } = data
   if (success && msg) {
     message.destroy()
@@ -25,4 +25,11 @@ axios.interceptors.response.use(res => {
 const host = process.env.BABEL_ENV === 'production' ? '' : 'http://127.0.0.1:9079'
 
 
-export const getDemo = (params) => axios.get(`${host}/api/get`, {params})
+export const getDemo = (params) => axios.get(`${host}/api/get`, { params });
+export const getTestJson = () =>
+  axios.get(`${host}/api/getTestJson`);
+export const postString = (params) => axios.post(`${host}/api/upload`, { ...params });
+export const postFile = (params) => axios.post(`${host}/api/upload`, params, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+});
+

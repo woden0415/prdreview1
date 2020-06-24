@@ -20,7 +20,7 @@ module.exports = {
         chunkFilename: 'js/[name].chunk.[chunkhash:6].js',
         publicPath: ''
     },
-    devtool: isProd ? false : 'source-map',
+    devtool: isProd ? false : 'eval-source-map',
     // webpack4.x 环境配置项
     mode: process.env.BABEL_ENV,
     module: {
@@ -43,10 +43,10 @@ module.exports = {
                 test: /\.less$/,
                 use: [
                     isProd ? MiniCssExtractPlugin.loader : {
-                        loader: 'style-loader', 
+                        loader: 'style-loader',
                     },
                     {
-                        loader: 'css-loader', 
+                        loader: 'css-loader',
                         options: {
                             importLoaders: 1,
                         }
@@ -61,8 +61,8 @@ module.exports = {
                         }
                     },
                     {
-                        loader: 'less-loader', 
-                        options: { 
+                        loader: 'less-loader',
+                        options: {
                             sourceMap: isProd ? false : true,
                         }
                     }
@@ -88,7 +88,7 @@ module.exports = {
                 use: [{
                     loader: 'file-loader',
                     options: {
-                        limit: 8192, 
+                        limit: 8192,
                         name: 'fonts/[name].[ext]?[hash:8]',
                         publicPath:''
                     },
@@ -99,7 +99,7 @@ module.exports = {
                 use: [{
                     loader: 'file-loader',
                     options: {
-                        limit: 8192, 
+                        limit: 8192,
                         name: 'audios/[name].[ext]?[hash:8]',
                         publicPath:''
                     },
@@ -110,7 +110,7 @@ module.exports = {
                 use: [{
                     loader: 'file-loader',
                     options: {
-                        limit: 8192, 
+                        limit: 8192,
                         name: 'videos/[name].[ext]?[hash:8]',
                         publicPath:''
                     },

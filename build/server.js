@@ -12,7 +12,7 @@ const { blue, red } = require('chalk')
 const app = new Koa()
 const compiler = webpack(webpackcfg)
 const koaHotMiddleware = webpackHotMiddleware(compiler, {
-    reload: true
+  reload: true
 })
 const koaDevMiddleware = webpackDevMiddleware(compiler, {
   stats: {
@@ -48,7 +48,7 @@ app.use(async (ctx, next) => {
 })
 // app.use('/api', createProxyMiddleware({ target: 'http://10.192.233.19:3001/', changeOrigin: true }));
 
-app.use(proxyMiddleware) 
+app.use(proxyMiddleware)
 app.listen(port, () => {
   koaDevMiddleware.waitUntilValid(function () {
     console.log(`\n> Listening at ${blue(`http://localhost:${port}`)}`)
@@ -56,7 +56,7 @@ app.listen(port, () => {
   })
 })
 
-function getIPAdress () {
+function getIPAdress() {
   var interfaces = require('os').networkInterfaces()
   for (var devName in interfaces) {
     var iface = interfaces[devName]

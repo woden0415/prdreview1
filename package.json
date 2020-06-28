@@ -17,6 +17,7 @@
     "axios": "^0.19.2",
     "compressing": "^1.5.1",
     "copy-webpack-plugin": "^5.1.1",
+    "iconv-lite": "^0.6.0",
     "koa": "^2.6.1",
     "koa-body": "^4.2.0",
     "koa-log4": "^2.3.2",
@@ -31,6 +32,7 @@
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
     "unzip": "^0.1.11",
+    "unzip-stream": "^0.3.0",
     "webpack-bundle-analyzer": "^3.6.1"
   },
   "devDependencies": {

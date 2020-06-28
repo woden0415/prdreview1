@@ -4,12 +4,15 @@ const { handleSuccess, handleFail } = require('../../utils');
 const { query } = require('../../db');
 const koaBody = require("koa-body");
 const fs = require('fs');
-const compressing = require('compressing');
 const path = require('path');
 // const extract = require('extract-zip')
 // const decompress = require('decompress')
 // const zlib = require('zlib')
 // const zlib = require('zlib')
+const compressing = require('compressing');
+const unzipStream = require('unzip-stream');
+const iconvLite = require('iconv-lite');
+
 let Router = koaRouter();
 
 Router.get('/get', async (ctx) => {
@@ -24,7 +27,7 @@ Router.get('/get', async (ctx) => {
 });
 Router.get('/getTestJson', async (ctx) => {
   try {
-    const text = fs.readFileSync(__dirname + "/bejson.json", { encoding: 'utf8' });
+    const text = fs.readFileSync(__dirname + "../www/assets/bejson.json", { encoding: 'utf8' });
     console.log(text);
     ctx.body = handleSuccess({
       data: text,
@@ -37,42 +40,32 @@ Router.get('/getTestJson', async (ctx) => {
 });
 Router.post('/upload', koaBody(), (ctx) => {
   if (ctx.request.files.file) {
-
     // @todo 根据文件名创建对应的目录，并给出回调事件
     // @todo 通过compressing.zip.uncompress(reader, filePath)方法将文件写入
     // @todo 找到对应的index.html文件，返回路径
+    const fileInstance = ctx.request.files.file;
+    const folderName = fileInstance.name.split('.')[0] + new Date().getTime();
+    const fileName = fileInstance.name;
+    const sourcePath = fileInstance.path;
+    const targetFolderPath = `${path.resolve(__dirname, '../../www/assets/previewprd')}/${folderName}/`;
+    // const copyFilePath = `${path.resolve(__dirname, '../../www/assets/previewprd')}/${folderName}/${fileName}`;
+
+    // 将流文件写入到本地
+    const copyReaderStream = fs.createReadStream(sourcePath);
+    fs.mkdirSync(targetFolderPath, { recursive: true }); // 创建目录
+    // const copyWriteStream = fs.createWriteStream(copyFilePath)
 
 
-    const reader = fs.createReadStream(ctx.request.files['file']['path']);
-    let filePath = `${path.resolve(__dirname, '../../www/assets')}/ddmccdn/`;
-    // let sourcePath = `${ctx.request.files['file']['path']}`
-    let sourcePath = `${__dirname}/PRD.zip`
-    console.log('filePath :>> ', filePath);
-    console.log('sourcePath :>> ', sourcePath);
-    compressing.zip.uncompress(reader, filePath)
-      .then(((res) => {
-        console.log(res);
-        ctx.body = handleSuccess({
-          data: ctx.request.files['file']['name'],
-        });
-      }))
-      .catch((error) => {
-        console.error(error);
-        ctx.body = handleSuccess({
-          data: '上传失败',
-        });
-      })
+    copyReaderStream
+      // .pipe(copyWriteStream)
+      .pipe(unzipStream.Extract({
+        path: targetFolderPath,
+        decodeString: (buffer) => { return iconvLite.decode(buffer, 'UTF-8'); },
+      }));
 
-
-
-
-
-
-
-
-
-
-
+    ctx.body = handleSuccess({
+      data: ctx.request.files['file']['name'],
+    });
   } else {
     ctx.body = handleSuccess({
       data: '上传失败',

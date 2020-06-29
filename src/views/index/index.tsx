@@ -3,8 +3,14 @@ import { Card, Button, Modal, Table, Form } from "antd";
 import { getTestJson, postString, postFile } from "@/services/request";
 import { stringify } from "querystring";
 
+interface IResponse {
+  success: boolean;
+  data: any;
+}
+
 const Index: React.FC = () => {
   const [count, setCount] = useState<number>(0);
+  const [prdUrl, setPrdUrl] = useState<string>('');
 
   const handleGetInfo = function () {
     getTestJson();
@@ -25,9 +31,13 @@ const Index: React.FC = () => {
     }
     var file: File = filenode.files[0];
 
-    let formData = new FormData();
+    let formData: FormData = new FormData();
     formData.append('file', file);
-    postFile(formData);
+
+    postFile(formData, (res: IResponse) => {
+      const { success, data } = res;
+      success && setPrdUrl(data.prdUrl);
+    });
   }
 
   return (
@@ -50,6 +60,7 @@ const Index: React.FC = () => {
         <div>
           <input id="inputfile" type="file" />
           <button onClick={() => { handleUploadFile() }}>上传文件</button>
+          {prdUrl ? <div>prd线上地址为：{prdUrl}</div> : <div></div>}
         </div>
       </div>
     </div>

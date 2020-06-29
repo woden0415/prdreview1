@@ -29,7 +29,11 @@ export const getDemo = (params) => axios.get(`${host}/api/get`, { params });
 export const getTestJson = () =>
   axios.get(`${host}/api/getTestJson`);
 export const postString = (params) => axios.post(`${host}/api/upload`, { ...params });
-export const postFile = (params) => axios.post(`${host}/api/upload`, params, {
+export const postFile = (params, callback) => axios.post(`${host}/api/upload`, params, {
   headers: { 'Content-Type': 'multipart/form-data' }
+}).then((res) => {
+  callback(res);
+}).catch((error) => {
+  console.error(error);
 });
 

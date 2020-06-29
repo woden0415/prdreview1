@@ -9,10 +9,10 @@ const path = require('path');
 // const decompress = require('decompress')
 // const zlib = require('zlib')
 // const zlib = require('zlib')
-const compressing = require('compressing');
+// const compressing = require('compressing');
 const unzipStream = require('unzip-stream');
 const iconvLite = require('iconv-lite');
-
+const CONSTS = require('../../consts')
 let Router = koaRouter();
 
 Router.get('/get', async (ctx) => {
@@ -40,31 +40,32 @@ Router.get('/getTestJson', async (ctx) => {
 });
 Router.post('/upload', koaBody(), (ctx) => {
   if (ctx.request.files.file) {
-    // @todo 根据文件名创建对应的目录，并给出回调事件
-    // @todo 通过compressing.zip.uncompress(reader, filePath)方法将文件写入
-    // @todo 找到对应的index.html文件，返回路径
+    // 根据文件名创建对应的目录
+    // 通过compressing.zip.uncompress(reader, filePath)方法将文件写入
+    // 找到对应的index.html文件，返回路径
     const fileInstance = ctx.request.files.file;
+    const folderNameOrigin = fileInstance.name.split('.')[0];
     const folderName = fileInstance.name.split('.')[0] + new Date().getTime();
-    const fileName = fileInstance.name;
     const sourcePath = fileInstance.path;
     const targetFolderPath = `${path.resolve(__dirname, '../../www/assets/previewprd')}/${folderName}/`;
-    // const copyFilePath = `${path.resolve(__dirname, '../../www/assets/previewprd')}/${folderName}/${fileName}`;
 
     // 将流文件写入到本地
     const copyReaderStream = fs.createReadStream(sourcePath);
     fs.mkdirSync(targetFolderPath, { recursive: true }); // 创建目录
-    // const copyWriteStream = fs.createWriteStream(copyFilePath)
-
 
     copyReaderStream
-      // .pipe(copyWriteStream)
       .pipe(unzipStream.Extract({
         path: targetFolderPath,
         decodeString: (buffer) => { return iconvLite.decode(buffer, 'UTF-8'); },
       }));
 
+    // 返回线上地址
+    const port = CONSTS.port.dev;
+    const host = 'http://127.0.0.1';
+    const Path = `/www/assets/previewprd/${folderName}/${folderNameOrigin}/index.html`
+    const prdUrl = `${host}:${port}${Path}`;
     ctx.body = handleSuccess({
-      data: ctx.request.files['file']['name'],
+      prdUrl
     });
   } else {
     ctx.body = handleSuccess({

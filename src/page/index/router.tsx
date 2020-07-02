@@ -8,13 +8,13 @@ import '@/assets/less/common.less';
 import { Route, routerRedux, Switch } from 'dva/router'
 
 const Routers = ({ history }) => {
-    return <routerRedux.ConnectedRouter history={history}>
-            <LayoutView>
-              <Switch>
-                <Route exact path="/" component={Index} />
-                <Route exact path="/index" component={Index} />
-              </Switch>
-            </LayoutView>
-        </routerRedux.ConnectedRouter>
+  return <routerRedux.ConnectedRouter history={history}>
+    <LayoutView>
+      <Switch>
+        <Route exact path="/" component={Index} />
+        <Route exact path="/index" component={Index} />
+      </Switch>
+    </LayoutView>
+  </routerRedux.ConnectedRouter>
 }
 export default Routers;

@@ -5,10 +5,6 @@ const { query } = require('../../db');
 const koaBody = require("koa-body");
 const fs = require('fs');
 const path = require('path');
-// const extract = require('extract-zip')
-// const decompress = require('decompress')
-// const zlib = require('zlib')
-// const zlib = require('zlib')
 // const compressing = require('compressing');
 const unzipStream = require('unzip-stream');
 const iconvLite = require('iconv-lite');
@@ -39,11 +35,11 @@ Router.get('/getTestJson', async (ctx) => {
   }
 });
 Router.post('/upload', koaBody(), (ctx) => {
-  if (ctx.request.files.file) {
+  if (ctx.request.files) {
     // 根据文件名创建对应的目录
     // 通过compressing.zip.uncompress(reader, filePath)方法将文件写入
     // 找到对应的index.html文件，返回路径
-    const fileInstance = ctx.request.files.file;
+    const fileInstance = ctx.request.files.files;
     const folderNameOrigin = fileInstance.name.split('.')[0];
     const folderName = fileInstance.name.split('.')[0] + new Date().getTime();
     const sourcePath = fileInstance.path;
@@ -68,8 +64,8 @@ Router.post('/upload', koaBody(), (ctx) => {
       prdUrl
     });
   } else {
-    ctx.body = handleSuccess({
-      data: '上传失败',
+    ctx.body = handleFail({
+      message: '上传失败'
     });
   }
 });

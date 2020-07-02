@@ -1,66 +1,71 @@
 import React, { useState, useEffect } from "react";
-import { Card, Button, Modal, Table, Form } from "antd";
-import { getTestJson, postString, postFile } from "@/services/request";
-import { stringify } from "querystring";
-
+import { postFile } from "@/services/request";
+import { UploadFile, UploadChangeParam } from "antd/lib/upload/interface";
+import { Upload, Button, message } from 'antd';
+import { InboxOutlined } from '@ant-design/icons';
+const { Dragger } = Upload;
+import './index.less';
 interface IResponse {
   success: boolean;
   data: any;
 }
 
 const Index: React.FC = () => {
-  const [count, setCount] = useState<number>(0);
   const [prdUrl, setPrdUrl] = useState<string>('');
+  const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [uploading, setUploading] = useState<Boolean>(false);
 
-  const handleGetInfo = function () {
-    getTestJson();
-  }
+  const props = {
+    onRemove: (file: UploadFile) => {
+      setFileList([]);
+    },
+    beforeUpload: (file: UploadFile) => {
+      return false;
+    },
+    accept: '.zip',
+    fileList,
+    onChange(info: UploadChangeParam) {
+      console.log('info :>> ', info);
+      setFileList(info.fileList)
+    },
+  };
 
-  const handleUploadString = function () {
-    const params = {
-      uname: 'wangdong',
-      uage: '13'
-    };
-    postString(params);
-  }
-
-  const handleUploadFile = () => {
-    var filenode: HTMLInputElement = document.querySelector('#inputfile');
-    if (filenode.files.length === 0) {
-      alert('请选择文件')
-    }
-    var file: File = filenode.files[0];
-
+  const handleUpload = () => {
     let formData: FormData = new FormData();
-    formData.append('file', file);
-
+    fileList.forEach((file: UploadFile) => {
+      formData.append('files', file.originFileObj);
+    });
     postFile(formData, (res: IResponse) => {
       const { success, data } = res;
       success && setPrdUrl(data.prdUrl);
     });
-  }
+  };
 
   return (
-    <div>
-      <div>Hello React hooks1!</div>
-
-      <div>
-        {count}
-        <button
-          onClick={() => {
-            setCount(count + 1);
-          }}
-        >
-          +1
-        </button>
-        <button onClick={() => { handleGetInfo() }}>获取一个文件</button>
-        <div>
-          <button onClick={() => { handleUploadString(); }}>上传文本字符串</button>
+    <div className="body-wrapper index-wrapper">
+      <div className="c-fileupload">
+        <div className="c-fileupload-header">
+          <h2 className="header-h2">线上预览prd文件</h2>
         </div>
-        <div>
-          <input id="inputfile" type="file" />
-          <button onClick={() => { handleUploadFile() }}>上传文件</button>
-          {prdUrl ? <div>prd线上地址为：{prdUrl}</div> : <div></div>}
+        <div className="c-fileupload-wrapper">
+          <Dragger {...props}>
+            <p className="ant-upload-drag-icon" >
+              <InboxOutlined />
+            </p>
+            <p className="ant-upload-text">点击此处或者拖拽文件上传</p>
+          </Dragger>
+          <Button
+            className="btn-upload"
+            type="primary"
+            onClick={handleUpload}
+            disabled={fileList.length === 0}
+            style={{ marginTop: 16 }}
+          >
+            {uploading ? '上传中' : '开始上传'}
+          </Button>
+          <p className="ant-upload-hint">
+            {prdUrl || '此处显示线上地址'}
+          </p>
         </div>
       </div>
     </div>

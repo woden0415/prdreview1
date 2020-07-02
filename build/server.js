@@ -29,7 +29,7 @@ compiler.plugin('compilation', function (compilation) {
     koaHotMiddleware.publish({
       action: 'reload'
     })
-    cb()
+    cb && cb()
   })
 })
 app.use(async (ctx, next) => {

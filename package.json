@@ -30,8 +30,7 @@
     "react-redux": "^7.2.0",
     "request": "^2.88.2",
     "request-promise": "^4.2.5",
-    "unzip": "^0.1.11",
-    "unzip-stream": "^0.3.0",
+    "unzip-stream1": "^0.3.0",
     "webpack-bundle-analyzer": "^3.6.1"
   },
   "devDependencies": {

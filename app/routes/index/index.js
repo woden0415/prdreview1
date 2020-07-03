@@ -6,7 +6,7 @@ const koaBody = require("koa-body");
 const fs = require('fs');
 const path = require('path');
 // const compressing = require('compressing');
-const unzipStream = require('unzip-stream');
+const unzipStream = require('unzip-stream1');
 const iconvLite = require('iconv-lite');
 const CONSTS = require('../../consts')
 let Router = koaRouter();
@@ -52,7 +52,7 @@ Router.post('/upload', koaBody(), (ctx) => {
     copyReaderStream
       .pipe(unzipStream.Extract({
         path: targetFolderPath,
-        decodeString: (buffer) => { return iconvLite.decode(buffer, 'UTF-8'); },
+        decodeString: (buffer) => { return iconvLite.decode(buffer, 'utf8'); },
       }));
 
     // 返回线上地址

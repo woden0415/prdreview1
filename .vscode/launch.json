@@ -5,27 +5,17 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch via NPM",
-      "type": "node",
-      "request": "launch",
-      "cwd": "${workspaceRoot}",
-      "runtimeExecutable": "npm",
-      "runtimeArgs": [
-          "run-script", "server"
-      ],
-      "port": 5858
-    },
-    {
       "type": "node",
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "program": "${workspaceFolder}/index.js",
+      "program": "${workspaceFolder}/app/main.js",
       "outFiles": [
         "${workspaceFolder}/**/*.js"
-      ]
+      ],
+      "runtimeExecutable": "/Users/woden0415/.nvm/versions/node/v12.18.2/bin/node"
     },
   ]
 }

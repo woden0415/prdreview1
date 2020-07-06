@@ -36,29 +36,32 @@ Router.get('/getTestJson', async (ctx) => {
 });
 Router.post('/upload', koaBody(), (ctx) => {
   if (ctx.request.files) {
-    // 根据文件名创建对应的目录
-    // 通过compressing.zip.uncompress(reader, filePath)方法将文件写入
-    // 找到对应的index.html文件，返回路径
-    const fileInstance = ctx.request.files.files;
-    const folderNameOrigin = fileInstance.name.split('.')[0];
-    const folderName = fileInstance.name.split('.')[0] + new Date().getTime();
-    const sourcePath = fileInstance.path;
-    const targetFolderPath = `${path.resolve(__dirname, '../../www/assets/previewprd')}/${folderName}/`;
 
-    // 将流文件写入到本地
-    const copyReaderStream = fs.createReadStream(sourcePath);
-    fs.mkdirSync(targetFolderPath, { recursive: true }); // 创建目录
+    const fileLists = ctx.request.files.fileLists;
+    let rootPath = '';
 
-    copyReaderStream
-      .pipe(unzipStream.Extract({
-        path: targetFolderPath,
-        decodeString: (buffer) => { return iconvLite.decode(buffer, 'utf8'); },
-      }));
+    fileLists.forEach(async (file) => {
+      const filePathName = decodeURIComponent(file.name);
+      const fileResourcePath = file.path;
+      rootPath = urlFormat(filePathName).rootPath;
+
+      const { filePath, fileName } = urlFormat(filePathName);
+      // 创建根目录链
+      const targetFolderPath = `${path.resolve(__dirname, '../../www/assets/previewprd')}/${filePath}/`;
+
+      let isExitFolder = await getStat(targetFolderPath);
+      if (!isExitFolder) {
+        fs.mkdirSync(targetFolderPath, { recursive: true }); // 创建目录
+      }
+      const readStream = fs.createReadStream(fileResourcePath);
+      writeStream = fs.createWriteStream(`${targetFolderPath}/${fileName}`);
+      readStream.pipe(writeStream);
+    });
 
     // 返回线上地址
     const port = CONSTS.port.dev;
     const host = 'http://127.0.0.1';
-    const Path = `/www/assets/previewprd/${folderName}/${folderNameOrigin}/index.html`
+    const Path = `/www/assets/previewprd/${rootPath}/index.html`
     const prdUrl = `${host}:${port}${Path}`;
     ctx.body = handleSuccess({
       prdUrl
@@ -69,4 +72,39 @@ Router.post('/upload', koaBody(), (ctx) => {
     });
   }
 });
+
+// 格式化filename得到对应的值
+/**
+ * @description 得到文件路径的对应值
+ * @param {*} url "book/book1/算法+101-JavaScript+描述（V1.0.0）.pdf";
+ * @returns {Object} {rootPath: 'book', filePath: 'book/book1', fileName: '算法+101-JavaScript+描述（V1.0.0）.pdf'}
+ */
+function urlFormat(url) {
+  let arrTmp = url.split('/');
+  const rootPath = arrTmp[0];
+  const fileName = arrTmp.pop();
+  const filePath = arrTmp.join('/')
+  return {
+    rootPath,
+    filePath,
+    fileName
+  }
+}
+
+/**
+ * 读取路径信息
+ * @param {string} path 路径
+ */
+function getStat(path) {
+  return new Promise((resolve, reject) => {
+    fs.stat(path, (err, stats) => {
+      if (err) {
+        resolve(false);
+      } else {
+        resolve(stats);
+      }
+    })
+  })
+}
+
 module.exports = Router;

@@ -1,7 +1,8 @@
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { message } from 'antd'
 axios.defaults.withCredentials = true
 
+import { IResponse } from "@/models/interfaces";
 axios.interceptors.response.use(res => {
   const { data = { success: false } } = res
   const { success, code, message: msg } = data
@@ -29,11 +30,13 @@ export const getDemo = (params) => axios.get(`${host}/api/get`, { params });
 export const getTestJson = () =>
   axios.get(`${host}/api/getTestJson`);
 
-export const postFile = (params, callback) => axios.post(`${host}/api/upload`, params, {
-  headers: { 'Content-Type': 'multipart/form-data' }
-}).then((res) => {
-  callback(res);
-}).catch((error) => {
-  console.error(error);
-});
+export const postFile = (params: FormData, callback: Function, errorCallback: Function) => {
+  axios.post(`${host}/api/upload`, params, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }).then((res: AxiosResponse): void => {
+    callback(res);
+  }).catch((error: Error) => {
+    errorCallback(error);
+  });
+}
 

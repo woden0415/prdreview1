@@ -19,7 +19,8 @@ const app = new Koa();
 app.use(koaBody({
   multipart: true,
   formidable: {
-    maxFileSize: 300 * 1024 * 1024    // 设置上传文件大小最大限制，默认2M
+    maxFileSize: 800 * 1024 * 1024,    // 设置上传文件大小最大限制，默认2M
+    multipart: true
   }
 }));
 
@@ -70,6 +71,7 @@ app
 
 const PORT = CONSTS.port.dev;
 app.listen(PORT);
+process.env.NODE_ENV = 'development';
 console.log(`env: ${process.env.NODE_ENV}`);
 console.log(`\n> Nodejs Listening at ${chalk.cyan(`http://127.0.0.1:${PORT}`)}`)
 console.log(`> Nodejs Listening at ${chalk.red(`http://${getIPAdress()}:${PORT}`)}\n`)

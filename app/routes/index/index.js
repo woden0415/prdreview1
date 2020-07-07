@@ -60,7 +60,7 @@ Router.post('/upload', koaBody(), (ctx) => {
 
     // 返回线上地址
     const port = CONSTS.port.dev;
-    const host = 'http://127.0.0.1';
+    const host = 'http://10.192.233.139';
     const Path = `/www/assets/previewprd/${rootPath}/index.html`
     const prdUrl = `${host}:${port}${Path}`;
     ctx.body = handleSuccess({

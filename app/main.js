@@ -19,7 +19,7 @@ const app = new Koa();
 app.use(koaBody({
   multipart: true,
   formidable: {
-    maxFileSize: 800 * 1024 * 1024,    // 设置上传文件大小最大限制，默认2M
+    maxFileSize: 40 * 1024 * 1024,    // 设置上传文件大小最大限制，默认10M
     multipart: true
   }
 }));

@@ -7,16 +7,16 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const isProd = process.env.BABEL_ENV === 'production'
 const assetsPath = (...relativePath) => path.join(__dirname, '..', ...relativePath)
-
+// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer') // 分析文件包
 module.exports = {
     // 入口文件配置项
     entry: {
-        'index': [path.resolve(__dirname, '../src/page/index/entry.tsx')].concat(isProd ? []: ['webpack-hot-middleware/client?reload=true']),
+        'index': [path.resolve(__dirname, '../src/page/index/entry.tsx')].concat(isProd ? [] : ['webpack-hot-middleware/client?reload=true']),
     },
     // 输出文件配置项
     output: {
         path: path.resolve(__dirname, '../app/www'),
-        filename:'js/[name].[hash:6].js',
+        filename: 'js/[name].[hash:6].js',
         chunkFilename: 'js/[name].chunk.[chunkhash:6].js',
         publicPath: ''
     },
@@ -75,7 +75,7 @@ module.exports = {
                         loader: 'url-loader',
                         options: {
                             limit: 8192,        // 小于8192字节的图片打包成base 64图片
-                            name:'images/[name].[hash:8].[ext]',
+                            name: 'images/[name].[hash:8].[ext]',
                             // publicPath: isProd ? 'https://w1.weshop.com/wxcdn/bd3fc0/' : '../',
                             publicPath: '../'
                         }
@@ -90,7 +90,7 @@ module.exports = {
                     options: {
                         limit: 8192,
                         name: 'fonts/[name].[ext]?[hash:8]',
-                        publicPath:''
+                        publicPath: ''
                     },
                 }],
             }, {
@@ -101,7 +101,7 @@ module.exports = {
                     options: {
                         limit: 8192,
                         name: 'audios/[name].[ext]?[hash:8]',
-                        publicPath:''
+                        publicPath: ''
                     },
                 }],
             }, {
@@ -112,7 +112,7 @@ module.exports = {
                     options: {
                         limit: 8192,
                         name: 'videos/[name].[ext]?[hash:8]',
-                        publicPath:''
+                        publicPath: ''
                     },
                 }],
             },
@@ -125,7 +125,7 @@ module.exports = {
         ]
     },
     resolve: {
-        extensions: ['.js', '.jsx', '.json', '.ts', '.d.ts', '.tsx', '/index.js', '/index.jsx','/index.ts', '/index.tsx', ],
+        extensions: ['.js', '.jsx', '.json', '.ts', '.d.ts', '.tsx', '/index.js', '/index.jsx', '/index.ts', '/index.tsx',],
         alias: {
             '@': assetsPath('src/'),  // import路径别名
         }
@@ -142,13 +142,13 @@ module.exports = {
             chunkFilename: 'css/[name].[hash:6].css',
         })
     ] : [
-        // new BundleAnalyzerPlugin(),
-        new webpack.HotModuleReplacementPlugin()
-    ]),
+            new BundleAnalyzerPlugin(),
+            new webpack.HotModuleReplacementPlugin()
+        ]),
     optimization: Object.assign({
         splitChunks: {
             chunks: 'all', // 只对入口文件处理
-            cacheGroups:{
+            cacheGroups: {
                 vendors: {
                     test: /node_modules\//,
                     name: 'vendor',

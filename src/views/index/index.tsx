@@ -1,16 +1,21 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { postFile } from "@/services/request";
 import { UploadFile, UploadChangeParam } from "antd/lib/upload/interface";
-import { Upload, Button, message } from 'antd';
-import { UploadOutlined, InboxOutlined } from '@ant-design/icons';
+const Upload = require('antd/lib/upload');
+const Button = require('antd/lib/button');
+const Col = require('antd/lib/col');
+const Row = require('antd/lib/row');
+const InboxOutlined = require('@ant-design/icons/InboxOutlined')
+
 const { Dragger } = Upload;
 import './index.less';
 import { IResponse, IMyFile } from '@/models/interfaces';
+import Util from "@/utils/util";
 
 const Index: React.FC = () => {
   const [prdUrl, setPrdUrl] = useState<string>('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
-  const [uploading, setUploading] = useState<Boolean>(false);
+  const [uploading, setUploading] = useState<boolean>(false);
   const props = {
     onRemove: (file: UploadFile) => {
       setFileList([]);
@@ -20,11 +25,10 @@ const Index: React.FC = () => {
     },
     fileList,
     onChange(info: UploadChangeParam) {
-      // @todo: 此处需要优化，避免多次set
-      setFileList(info.fileList)
+      Util.debounce(setFileList(info.fileList), 100);
     },
     directory: true,
-    webkitdirectory: true
+    webkitdirectory: true,
   };
 
   const handleUpload = () => {
@@ -40,11 +44,17 @@ const Index: React.FC = () => {
       const { success, data } = res;
       success && setPrdUrl(data.prdUrl);
       setUploading(false);
+      handlerClear();
     }, (error: Error) => {
       console.error(error);
       setUploading(false);
+      handlerClear();
     });
   };
+
+  const handlerClear = () => {
+    setFileList([]);
+  }
 
   return (
     <div className="body-wrapper index-wrapper">
@@ -59,18 +69,35 @@ const Index: React.FC = () => {
             </p>
             <p className="ant-upload-text">点击此处或者拖拽文件夹上传</p>
           </Dragger>
-          <Button
-            className="btn-upload"
-            type="primary"
-            onClick={handleUpload}
-            disabled={fileList.length === 0}
-            style={{ marginTop: 16 }}
-          >
-            {uploading ? '上传中' : '开始上传'}
-          </Button>
-          <p className="ant-upload-hint">
-            {prdUrl || '此处显示线上地址'}
-          </p>
+          <Row gutter={[16, 24]}>
+            <Col span={6}>
+              <Button
+                className="btn-upload"
+                type="dashed"
+                onClick={handlerClear}
+                style={{ marginTop: 16 }}
+              >
+                清除当前已选文件
+              </Button>
+            </Col>
+            <Col span={18}>
+              <Button
+                className="btn-upload"
+                type="primary"
+                onClick={handleUpload}
+                disabled={fileList.length === 0}
+                style={{ marginTop: 16 }}
+                loading={uploading}
+              >
+                {uploading ? '上传中' : '开始上传'}
+              </Button>
+            </Col>
+          </Row>
+          {prdUrl ? (
+            <a className="ant-upload-hint" href={prdUrl} target="_blank"> {prdUrl} </a>)
+            : (
+              <p className="ant-upload-hint"> 此处显示线上地址 </p>
+            )}
         </div>
       </div>
     </div>

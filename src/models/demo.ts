@@ -1,7 +1,6 @@
 import { getDemo } from '@/services/request'
 import { Subscription, Effect } from 'dva';
 import { Reducer } from 'redux';
-import { notification } from 'antd';
 
 export interface DemoModelType {
   namespace: 'demo';
@@ -31,20 +30,20 @@ const DemoModel: DemoModelType = {
   },
   reducers: {
     save(state, { payload }) {
-        return { ...state, ...payload };
+      return { ...state, ...payload };
     }
-},
-effects: {
+  },
+  effects: {
     * getDemo({ payload }, { put, call }) {
-        const { params } = payload;
-        const resData = yield call(getDemo, params);
-        yield put({
-          type: 'save',
-          payload: {
-            demoList: resData.data.data
-          }
+      const { params } = payload;
+      const resData = yield call(getDemo, params);
+      yield put({
+        type: 'save',
+        payload: {
+          demoList: resData.data.data
+        }
       });
-    }, 
+    },
   }
 };
 

@@ -1,14 +1,10 @@
 // 脚手架
 const koaRouter = require('koa-router');
-const { handleSuccess, handleFail } = require('../../utils');
+const { handleSuccess, handleFail, getService } = require('../../utils');
 const { query } = require('../../db');
 const koaBody = require("koa-body");
 const fs = require('fs');
 const path = require('path');
-// const compressing = require('compressing');
-const unzipStream = require('unzip-stream1');
-const iconvLite = require('iconv-lite');
-const CONSTS = require('../../consts')
 let Router = koaRouter();
 
 Router.get('/get', async (ctx) => {
@@ -59,10 +55,8 @@ Router.post('/upload', koaBody(), (ctx) => {
     });
 
     // 返回线上地址
-    const port = CONSTS.port.dev;
-    const host = 'http://10.192.233.139';
     const Path = `/www/assets/previewprd/${rootPath}/index.html`
-    const prdUrl = `${host}:${port}${Path}`;
+    const prdUrl = `${getService()}${Path}`;
     ctx.body = handleSuccess({
       prdUrl
     });

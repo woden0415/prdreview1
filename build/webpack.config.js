@@ -142,7 +142,7 @@ module.exports = {
             chunkFilename: 'css/[name].[hash:6].css',
         })
     ] : [
-            new BundleAnalyzerPlugin(),
+            // new BundleAnalyzerPlugin(),
             new webpack.HotModuleReplacementPlugin()
         ]),
     optimization: Object.assign({

@@ -23,7 +23,7 @@ axios.interceptors.response.use(res => {
   Promise.resolve(error)
 })
 
-const host = process.env.BABEL_ENV === 'production' ? '' : 'http://10.192.233.139:9079'; // @note: 改为自己的本机ip
+const host = process.env.BABEL_ENV === 'production' ? '' : 'http://10.192.232.166:9079'; // @note: 改为自己的本机ip
 
 
 export const getDemo = (params) => axios.get(`${host}/api/get`, { params });

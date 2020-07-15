@@ -30,6 +30,24 @@ Router.get('/getTestJson', async (ctx) => {
     });
   }
 });
+Router.post('/beforeUpload', async (ctx) => {
+  const floderName = ctx.request.body.floderName;
+  const rootPath = `${process.cwd()}/app/www/assets/previewprd/`;
+
+  const dir = await fs.promises.opendir(rootPath);
+  let res = false;
+  for await (const dirItem of dir) {
+    if (dirItem.name === floderName) {
+      res = true;
+      break;
+    }
+  }
+  if (res) {
+    ctx.body = handleFail(null, '服务器上有重复文件夹名称，请修改文件夹名后重新上传')
+  } else {
+    ctx.body = handleSuccess(null, '无重复文件夹')
+  }
+})
 Router.post('/upload', koaBody(), (ctx) => {
   if (ctx.request.files) {
 
@@ -57,13 +75,9 @@ Router.post('/upload', koaBody(), (ctx) => {
     // 返回线上地址
     const Path = `/www/assets/previewprd/${rootPath}/index.html`
     const prdUrl = `${getService()}${Path}`;
-    ctx.body = handleSuccess({
-      prdUrl
-    });
+    ctx.body = handleSuccess({ prdUrl }, '上传成功');
   } else {
-    ctx.body = handleFail({
-      message: '上传失败'
-    });
+    ctx.body = handleFail(null, '上传失败');
   }
 });
 

@@ -40,3 +40,7 @@ export const postFile = (params: FormData, callback: Function, errorCallback: Fu
   });
 }
 
+export const postValidFolderName = async (params: { floderName: String }) => {
+  return await axios.post(`${host}/api/beforeUpload`, params);
+}
+

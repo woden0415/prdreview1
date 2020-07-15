@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import { postFile } from "@/services/request";
+import { postFile, postValidFolderName } from "@/services/request";
 import { UploadFile, UploadChangeParam } from "antd/lib/upload/interface";
-import { Upload, Button, Col, Row, } from 'antd';
+import { Upload, Button, Col, Row } from 'antd';
 import InboxOutlined from '@ant-design/icons/InboxOutlined';
 
 const { Dragger } = Upload;
@@ -28,7 +28,32 @@ const Index: React.FC = () => {
     webkitdirectory: true,
   };
 
-  const handleUpload = () => {
+  /**
+   * @description 提前校验是否有重复文件夹名
+   * @returns {Boolean} true
+   */
+  const handleBeforeUpload = async () => {
+    const firstFile: UploadFile = fileList[0];
+    const firstFileResource: IMyFile = firstFile.originFileObj as IMyFile;
+    const relativePath: string = firstFileResource.webkitRelativePath;
+    const relativePathArr = relativePath.split('/');
+    let floderName: string;
+    if (relativePathArr.length > 0) {
+      floderName = relativePathArr[0];
+    }
+    const resp: IResponse = await postValidFolderName({ floderName });
+    const { success } = resp;
+    if (!success) {
+      return false;
+    }
+    return true;
+  }
+
+  const handleUpload = async () => {
+    const flag = await handleBeforeUpload();
+    if (!flag) {
+      return;
+    }
     if (uploading) { return }
 
     let formData: FormData = new FormData();

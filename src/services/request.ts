@@ -44,3 +44,9 @@ export const postValidFolderName = async (params: { floderName: String }) => {
   return await axios.post(`${host}/api/beforeUpload`, params);
 }
 
+/**
+ * @description 获取prd列表
+ */
+export const getPrdLists = async () => {
+  return await axios.get(`${host}/api/prdList`);
+}

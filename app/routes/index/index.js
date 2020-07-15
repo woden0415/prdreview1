@@ -18,17 +18,18 @@ Router.get('/get', async (ctx) => {
   });
 });
 Router.get('/getTestJson', async (ctx) => {
-  try {
-    const text = fs.readFileSync(__dirname + "../www/assets/bejson.json", { encoding: 'utf8' });
-    console.log(text);
-    ctx.body = handleSuccess({
-      data: text,
-    });
-  } catch (error) {
-    ctx.body = handleSuccess({
-      data: JSON.stringify(error),
-    });
-  }
+  // try {
+  //   const text = fs.readFileSync(__dirname + "../www/assets/bejson.json", { encoding: 'utf8' });
+  //   console.log(text);
+  //   ctx.body = handleSuccess({
+  //     data: text,
+  //   });
+  // } catch (error) {
+  //   ctx.body = handleSuccess({
+  //     data: JSON.stringify(error),
+  //   });
+  // }
+  ctx.body = handleSuccess(null, 'asdfad');
 });
 Router.post('/beforeUpload', async (ctx) => {
   const floderName = ctx.request.body.floderName;
@@ -48,6 +49,10 @@ Router.post('/beforeUpload', async (ctx) => {
     ctx.body = handleSuccess(null, '无重复文件夹')
   }
 })
+
+/**
+ * @description 上传prd
+ */
 Router.post('/upload', koaBody(), (ctx) => {
   if (ctx.request.files) {
 
@@ -80,6 +85,22 @@ Router.post('/upload', koaBody(), (ctx) => {
     ctx.body = handleFail(null, '上传失败');
   }
 });
+
+Router.get('/prdList', async (ctx) => {
+  const rootPath = `${process.cwd()}/app/www/assets/previewprd/`;
+  const dir = await fs.promises.opendir(rootPath);
+  let arr = [];
+
+  for await (const dirItem of dir) {
+    const Path = `/www/assets/previewprd/${dirItem.name}/index.html`
+    const prdUrl = `${getService()}${Path}`;
+    arr.push({
+      name: dirItem.name,
+      prdUrl
+    });
+  }
+  ctx.body = handleSuccess({ prdList: arr }, '获取成功');
+})
 
 // 格式化filename得到对应的值
 /**

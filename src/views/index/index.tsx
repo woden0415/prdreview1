@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { postFile, postValidFolderName } from "@/services/request";
+import React, { useState, useEffect } from "react";
+import { postFile, postValidFolderName, getPrdLists } from "@/services/request";
 import { UploadFile, UploadChangeParam } from "antd/lib/upload/interface";
 import { Upload, Button, Col, Row } from 'antd';
 import InboxOutlined from '@ant-design/icons/InboxOutlined';
@@ -13,6 +13,7 @@ const Index: React.FC = () => {
   const [prdUrl, setPrdUrl] = useState<string>('');
   const [fileList, setFileList] = useState<UploadFile[]>([]);
   const [uploading, setUploading] = useState<boolean>(false);
+  const [prdList, setPrdList] = useState<any[]>([]);
   const props = {
     onRemove: (file: UploadFile) => {
       setFileList([]);
@@ -28,6 +29,14 @@ const Index: React.FC = () => {
     webkitdirectory: true,
   };
 
+  useEffect(() => {
+    (async () => {
+      const res = await getPrdLists();
+      const { data: { prdList } } = res;
+      console.log('prdList :>> ', prdList);
+      setPrdList(prdList);
+    })()
+  }, [0]);
   /**
    * @description 提前校验是否有重复文件夹名
    * @returns {Boolean} true
@@ -84,43 +93,59 @@ const Index: React.FC = () => {
         <div className="c-fileupload-header">
           <h2 className="header-h2">线上预览prd文件</h2>
         </div>
-        <div className="c-fileupload-wrapper">
-          <Dragger {...props}>
-            <p className="ant-upload-drag-icon" >
-              <InboxOutlined />
-            </p>
-            <p className="ant-upload-text">点击此处或者拖拽文件夹上传</p>
-          </Dragger>
-          <Row gutter={[16, 24]}>
-            <Col span={6}>
-              <Button
-                className="btn-upload"
-                type="dashed"
-                onClick={handlerClear}
-                style={{ marginTop: 16 }}
-              >
-                清除当前已选文件
+        <Row>
+          <Col span={5}>
+            <div className="prd-list">
+              <h2 className="prd-list-title">已经上传的prd</h2>
+              <ul>
+                {prdList.map((item) => {
+                  return <li key={item.prdUrl}><a href={item.prdUrl} target="_blank">{item.name}</a></li>
+                })}
+              </ul>
+            </div>
+          </Col>
+
+          <Col span={19}>
+            <div className="c-fileupload-wrapper">
+              <Dragger {...props}>
+                <p className="ant-upload-drag-icon" >
+                  <InboxOutlined />
+                </p>
+                <p className="ant-upload-text">点击此处或者拖拽文件夹上传</p>
+              </Dragger>
+              <Row gutter={[16, 24]}>
+                <Col span={6}>
+                  <Button
+                    className="btn-upload"
+                    type="dashed"
+                    onClick={handlerClear}
+                    style={{ marginTop: 16 }}
+                  >
+                    清除当前已选文件
               </Button>
-            </Col>
-            <Col span={18}>
-              <Button
-                className="btn-upload"
-                type="primary"
-                onClick={handleUpload}
-                disabled={fileList.length === 0}
-                style={{ marginTop: 16 }}
-                loading={uploading}
-              >
-                {uploading ? '上传中' : '开始上传'}
-              </Button>
-            </Col>
-          </Row>
-          {prdUrl ? (
-            <a className="ant-upload-hint" href={prdUrl} target="_blank"> {prdUrl} </a>)
-            : (
-              <p className="ant-upload-hint"> 此处显示线上地址 </p>
-            )}
-        </div>
+                </Col>
+                <Col span={18}>
+                  <Button
+                    className="btn-upload"
+                    type="primary"
+                    onClick={handleUpload}
+                    disabled={fileList.length === 0}
+                    style={{ marginTop: 16 }}
+                    loading={uploading}
+                  >
+                    {uploading ? '上传中' : '开始上传'}
+                  </Button>
+                </Col>
+              </Row>
+              {prdUrl ? (
+                <a className="ant-upload-hint" href={prdUrl} target="_blank"> {prdUrl} </a>)
+                : (
+                  <p className="ant-upload-hint"> 此处显示线上地址 </p>
+                )}
+            </div>
+          </Col>
+        </Row>
+
       </div>
     </div>
   );

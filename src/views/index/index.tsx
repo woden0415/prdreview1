@@ -1,11 +1,8 @@
 import React, { useState } from "react";
 import { postFile } from "@/services/request";
 import { UploadFile, UploadChangeParam } from "antd/lib/upload/interface";
-const Upload = require('antd/lib/upload');
-const Button = require('antd/lib/button');
-const Col = require('antd/lib/col');
-const Row = require('antd/lib/row');
-const InboxOutlined = require('@ant-design/icons/InboxOutlined')
+import { Upload, Button, Col, Row, } from 'antd';
+import InboxOutlined from '@ant-design/icons/InboxOutlined';
 
 const { Dragger } = Upload;
 import './index.less';

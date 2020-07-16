@@ -17,35 +17,26 @@ Router.get('/get', async (ctx) => {
     total: datas.length
   });
 });
-Router.get('/getTestJson', async (ctx) => {
-  // try {
-  //   const text = fs.readFileSync(__dirname + "../www/assets/bejson.json", { encoding: 'utf8' });
-  //   console.log(text);
-  //   ctx.body = handleSuccess({
-  //     data: text,
-  //   });
-  // } catch (error) {
-  //   ctx.body = handleSuccess({
-  //     data: JSON.stringify(error),
-  //   });
-  // }
-  ctx.body = handleSuccess(null, 'asdfad');
-});
-Router.post('/beforeUpload', async (ctx) => {
-  const floderName = ctx.request.body.floderName;
-  const rootPath = `${process.cwd()}/app/www/assets/previewprd/`;
 
-  const dir = await fs.promises.opendir(rootPath);
-  let res = false;
-  for await (const dirItem of dir) {
-    if (dirItem.name === floderName) {
-      res = true;
-      break;
+Router.post('/beforeUpload', async (ctx) => {
+  try {
+    const floderName = ctx.request.body.floderName;
+    const rootPath = `${process.cwd()}/app/www/assets/previewprd/`;
+
+    const dir = await fs.promises.opendir(rootPath);
+    let res = false;
+    for await (const dirItem of dir) {
+      if (dirItem.name === floderName) {
+        res = true;
+        break;
+      }
     }
-  }
-  if (res) {
-    ctx.body = handleFail(null, '服务器上有重复文件夹名称，请修改文件夹名后重新上传')
-  } else {
+    if (res) {
+      ctx.body = handleFail(null, '服务器上有重复文件夹名称，请修改文件夹名后重新上传')
+    } else {
+      ctx.body = handleSuccess(null, '无重复文件夹')
+    }
+  } catch (error) {
     ctx.body = handleSuccess(null, '无重复文件夹')
   }
 })
@@ -87,19 +78,23 @@ Router.post('/upload', koaBody(), (ctx) => {
 });
 
 Router.get('/prdList', async (ctx) => {
-  const rootPath = `${process.cwd()}/app/www/assets/previewprd/`;
-  const dir = await fs.promises.opendir(rootPath);
-  let arr = [];
+  try {
+    const rootPath = `${process.cwd()}/app/www/assets/previewprd/`;
+    const dir = await fs.promises.opendir(rootPath);
+    let arr = [];
 
-  for await (const dirItem of dir) {
-    const Path = `/www/assets/previewprd/${dirItem.name}/index.html`
-    const prdUrl = `${getService()}${Path}`;
-    arr.push({
-      name: dirItem.name,
-      prdUrl
-    });
+    for await (const dirItem of dir) {
+      const Path = `/www/assets/previewprd/${dirItem.name}/index.html`
+      const prdUrl = `${getService()}${Path}`;
+      arr.push({
+        name: dirItem.name,
+        prdUrl
+      });
+    }
+    ctx.body = handleSuccess({ prdList: arr }, '获取成功');
+  } catch (error) {
+    ctx.body = handleSuccess({ prdList: [] }, '获取成功');
   }
-  ctx.body = handleSuccess({ prdList: arr }, '获取成功');
 })
 
 // 格式化filename得到对应的值
